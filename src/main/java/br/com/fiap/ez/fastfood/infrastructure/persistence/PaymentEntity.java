@@ -13,15 +13,13 @@ public class PaymentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private OrderEntity order;
+    @Column(name = "order_id", nullable = false)
+    private Long orderId;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = true)
-    private CustomerEntity customer;
+    @Column(name = "user_id")
+    private Long userId;
 
-    @Column(name = "payment_date", nullable = true)
+    @Column(name = "payment_date")
     private ZonedDateTime paymentDate;
 
     @Column(name = "payment_price", nullable = false)
@@ -34,11 +32,11 @@ public class PaymentEntity {
     public PaymentEntity() {
     }
 
-    public PaymentEntity(Long id, OrderEntity order, CustomerEntity customer, ZonedDateTime paymentDate,
+    public PaymentEntity(Long id, Long orderId, Long userId, ZonedDateTime paymentDate,
                          Double paymentPrice, PaymentStatus paymentStatus) {
         this.id = id;
-        this.order = order;
-        this.customer = customer;
+        this.orderId = orderId;
+        this.userId = userId;
         this.paymentDate = paymentDate;
         this.paymentPrice = paymentPrice;
         this.paymentStatus = paymentStatus;
@@ -52,20 +50,20 @@ public class PaymentEntity {
         this.id = id;
     }
 
-    public OrderEntity getOrder() {
-        return order;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOrder(OrderEntity order) {
-        this.order = order;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
-    public CustomerEntity getCustomer() {
-        return customer;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCustomer(CustomerEntity customer) {
-        this.customer = customer;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public ZonedDateTime getPaymentDate() {
