@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface JpaPaymentRepository extends JpaRepository<PaymentEntity, Long>{
 	
-	@Query(nativeQuery = true, value = "SELECT * FROM EZ_FASTFOOD.PAYMENT WHERE id = :id")
+	@Query(nativeQuery = true, value = "SELECT * FROM EZ_FASTFOOD_PAYMENT.PAYMENT WHERE id = :id")
 	PaymentEntity findPaymentById(@Param("id") Long id);
 	
 
