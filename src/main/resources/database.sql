@@ -8,3 +8,6 @@ CREATE TABLE IF NOT EXISTS EZ_FASTFOOD_PAYMENT.PAYMENT (
     payment_price DECIMAL,
     payment_status VARCHAR(50)
 );
+
+INSERT INTO EZ_FASTFOOD_PAYMENT.PAYMENT (order_id, user_id, payment_date, payment_price, payment_status)
+VALUES (1, 1, NULL, 20.50, 'PENDING');
