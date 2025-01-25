@@ -10,16 +10,6 @@ import org.springframework.context.annotation.Configuration;
 public class RepositoryConfiguration {
 
 	@Bean
-	public ProductRepository productRepository(JpaProductRepository jpaProductRepository) {
-		return new ProductRepositoryImpl(jpaProductRepository);
-	}
-
-	@Bean
-	public CategoryRepository categoryRepository(JpaCategoryRepository jpaCategoryRepository) {
-		return new CategoryRepositoryImpl(jpaCategoryRepository);
-	}
-
-	@Bean
 	public PaymentRepository paymentRepository(JpaPaymentRepository paymentJpaRepository) {
 		return new PaymentRepositoryImpl(paymentJpaRepository);
 	}
