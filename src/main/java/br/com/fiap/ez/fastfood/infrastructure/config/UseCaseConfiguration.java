@@ -9,11 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class UseCaseConfiguration {
 
 	@Bean
-	public ProductUseCase productUseCase(ProductRepository productRepository, CategoryRepository categoryRepository) {
-		return new ProductUseCase(productRepository, categoryRepository);
-	}
-
-	@Bean
 	public PaymentUseCase paymentUseCase(PaymentRepository paymentRepository) {
 		return new PaymentUseCase(paymentRepository);
 	}
