@@ -5,8 +5,8 @@ import java.time.ZonedDateTime;
 public class Payment {
 
     private Long id;
-    private Order order;
-    private Customer customer;
+    private Long orderId;
+    private Long userId;
     private ZonedDateTime paymentDate;
     private Double paymentPrice;
     private PaymentStatus paymentStatus;
@@ -14,11 +14,14 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(Long id, ZonedDateTime paymentDate, Double paymentPrice,
+    public Payment(Long id, Long orderId, Long userId, ZonedDateTime paymentDate, Double paymentPrice,
                    PaymentStatus paymentStatus) {
+        if (paymentPrice == null || paymentPrice <= 0) {
+            throw new IllegalArgumentException("Pagamento deve ser maior que 0.");
+        }
         this.id = id;
-        this.order = order;
-        this.customer = customer;
+        this.orderId = orderId;
+        this.userId = userId;
         this.paymentDate = paymentDate;
         this.paymentPrice = paymentPrice;
         this.paymentStatus = paymentStatus;
@@ -32,20 +35,20 @@ public class Payment {
         this.id = id;
     }
 
-    public Order getOrder() {
-        return order;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public ZonedDateTime getPaymentDate() {
@@ -61,6 +64,9 @@ public class Payment {
     }
 
     public void setPaymentPrice(Double paymentPrice) {
+        if (paymentPrice == null || paymentPrice <= 0) {
+            throw new IllegalArgumentException("Pagamento deve ser maior que 0.");
+        }
         this.paymentPrice = paymentPrice;
     }
 

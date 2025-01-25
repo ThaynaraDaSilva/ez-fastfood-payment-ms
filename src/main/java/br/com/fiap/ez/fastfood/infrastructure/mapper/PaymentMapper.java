@@ -2,7 +2,6 @@ package br.com.fiap.ez.fastfood.infrastructure.mapper;
 
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
-import br.com.fiap.ez.fastfood.infrastructure.persistence.OrderEntity;
 import br.com.fiap.ez.fastfood.infrastructure.persistence.PaymentEntity;
 
 import java.util.List;
@@ -14,8 +13,12 @@ public class PaymentMapper {
 		if (entity == null) {
 			return null;
 		}
-		return new Payment(entity.getId(), OrderMapper.entityToDomain(entity.getOrder()),
-				CustomerMapper.entityToDomain(entity.getCustomer()), entity.getPaymentDate(), entity.getPaymentPrice(),
+		return new Payment(
+				entity.getId(),
+				entity.getOrderId(),
+				entity.getUserId(),
+				entity.getPaymentDate(),
+				entity.getPaymentPrice(),
 				entity.getPaymentStatus());
 	}
 
@@ -24,16 +27,11 @@ public class PaymentMapper {
 		if (payment == null) {
 			return null;
 		}
+
 		PaymentEntity entity = new PaymentEntity();
 		entity.setId(payment.getId());
-
-		if (payment.getOrder() != null && payment.getOrder().getId() != null) {
-	        OrderEntity orderEntity = new OrderEntity();
-	        orderEntity.setId(payment.getOrder().getId());
-	        entity.setOrder(orderEntity);
-	    }
-		entity.setCustomer(CustomerMapper.domainToEntity(payment.getCustomer()));
-																					
+		entity.setOrderId(payment.getOrderId());
+		entity.setUserId(payment.getUserId());
 		entity.setPaymentDate(payment.getPaymentDate());
 		entity.setPaymentPrice(payment.getPaymentPrice());
 		entity.setPaymentStatus(payment.getPaymentStatus());

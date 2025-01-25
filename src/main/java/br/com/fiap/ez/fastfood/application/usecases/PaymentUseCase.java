@@ -1,11 +1,8 @@
 package br.com.fiap.ez.fastfood.application.usecases;
 
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
-import br.com.fiap.ez.fastfood.domain.model.Order;
-import br.com.fiap.ez.fastfood.domain.model.OrderStatus;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
 import br.com.fiap.ez.fastfood.domain.model.PaymentStatus;
-import br.com.fiap.ez.fastfood.domain.repository.OrderRepository;
 import br.com.fiap.ez.fastfood.domain.repository.PaymentRepository;
 import br.com.fiap.ez.fastfood.frameworks.exception.BusinessException;
 import br.com.fiap.ez.fastfood.infrastructure.mapper.PaymentMapper;
@@ -16,25 +13,25 @@ import java.time.ZonedDateTime;
 public class PaymentUseCase {
 
 	private final PaymentRepository paymentRepository;
-	private final OrderRepository orderRepository;
 
 	public PaymentUseCase(PaymentRepository paymentRepository) {
 		this.paymentRepository = paymentRepository;
-		this.orderRepository = orderRepository;
-
 	}
 
-	public void registerPayment(Order order) {
+	public void registerPayment(Long orderId, Long userId, Double totalPrice) {
+		if (orderId == null || totalPrice == null || totalPrice <= 0) {
+			throw new BusinessException("Dados inválidos para registrar o pagamento.");
+		}
 
 		Payment payment = new Payment();
 
-		payment.setOrder(order);
-
-		payment.setCustomer(order.getCustomer());
-		payment.setPaymentPrice(order.getTotalPrice());
+		payment.setOrderId(orderId);
+		payment.setUserId(userId);
+		payment.setPaymentPrice(totalPrice);
 		payment.setPaymentStatus(PaymentStatus.PENDING);
-		paymentRepository.registerPayment(payment);
+		payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
+		paymentRepository.registerPayment(payment);
 	}
 
 	public PaymentDTO registerPaymentStatus(PaymentDTO paymentDto) {
@@ -42,22 +39,12 @@ public class PaymentUseCase {
 		if (payment == null) {
 			throw new BusinessException("Não existe pagamento com este id");
 		}
-		Order order = orderRepository.findOrderById(payment.getOrder().getId());
 
 		// payment
 		if (payment.getPaymentStatus() == PaymentStatus.PENDING) {
 			payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
 			payment.setPaymentStatus(PaymentStatus.valueOf(paymentDto.getPaymentStatus().toUpperCase()));
 			paymentRepository.registerPaymentStatus(payment);
-
-			// order
-			if (PaymentStatus.valueOf(paymentDto.getPaymentStatus().toUpperCase()) == PaymentStatus.OK) {
-				order.setStatus(OrderStatus.RECEIVED);
-			} else {
-				order.setStatus(OrderStatus.CANCELLED);
-			}
-			order.setOrderTime(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
-			orderRepository.save(order);
 
 			return PaymentMapper.domainToResponseDto(payment);
 		} else {
