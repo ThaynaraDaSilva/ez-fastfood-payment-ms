@@ -31,17 +31,16 @@ public class PaymentController {
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping("/webhook/status")
-	public ResponseEntity<?> registerPaymentStatus(@RequestBody PaymentDTO paymentDTO) {
-
-		return new ResponseEntity<>(paymentUseCase.registerPaymentStatus(paymentDTO), HttpStatus.OK);
-
-	}
-
 	@GetMapping("/check-status/{paymentId}")
 	public ResponseEntity<PaymentDTO> checkPaymentStatus(@PathVariable Long paymentId) {
 		PaymentDTO paymentDTO = paymentUseCase.checkPaymentStatus(paymentId);
 		return ResponseEntity.ok(paymentDTO);
+	}
+
+	@PutMapping("/send-to-bank/{paymentId}")
+	public ResponseEntity<String> sendPaymentToBank(@PathVariable Long paymentId) {
+		paymentUseCase.sendPaymentToBank(paymentId);
+		return ResponseEntity.ok("Pagamento enviado para a instituição financeira e status atualizado para OK");
 	}
 
 }

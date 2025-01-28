@@ -19,7 +19,7 @@ public class PaymentEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "payment_date")
+    @Column(name = "payment_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private ZonedDateTime paymentDate;
 
     @Column(name = "payment_price", nullable = false)

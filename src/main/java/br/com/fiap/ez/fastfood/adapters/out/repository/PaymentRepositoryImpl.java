@@ -28,11 +28,15 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 	}
 
 	@Override
-	public Payment registerPaymentStatus(Payment payment) {
-		PaymentEntity entity =  PaymentMapper.domainToEntity(payment);
-		jpaPaymentRepository.save(entity);
-		return payment;
-		
+	public void updatePaymentStatus(Payment payment) {
+		PaymentEntity entity = jpaPaymentRepository.findPaymentById(payment.getId());
+		if (entity != null) {
+			entity.setPaymentStatus(payment.getPaymentStatus());
+			entity.setPaymentDate(payment.getPaymentDate());
+			jpaPaymentRepository.save(entity);
+		} else {
+			throw new IllegalArgumentException("Payment not found with ID: " + payment.getId());
+		}
 	}
 
 }

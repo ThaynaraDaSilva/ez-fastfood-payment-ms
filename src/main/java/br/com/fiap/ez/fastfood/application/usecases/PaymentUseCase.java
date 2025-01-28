@@ -34,25 +34,6 @@ public class PaymentUseCase {
 		paymentRepository.registerPayment(payment);
 	}
 
-	public PaymentDTO registerPaymentStatus(PaymentDTO paymentDto) {
-		Payment payment = paymentRepository.findPaymentById(paymentDto.getId());
-		if (payment == null) {
-			throw new BusinessException("Não existe pagamento com este id");
-		}
-
-		// payment
-		if (payment.getPaymentStatus() == PaymentStatus.PENDING) {
-			payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
-			payment.setPaymentStatus(PaymentStatus.valueOf(paymentDto.getPaymentStatus().toUpperCase()));
-			paymentRepository.registerPaymentStatus(payment);
-
-			return PaymentMapper.domainToResponseDto(payment);
-		} else {
-			throw new BusinessException("Este pagamento já foi confirmado ou recusado.");
-		}
-
-	}
-
 	public PaymentDTO checkPaymentStatus(Long paymentId) {
 		Payment payment = paymentRepository.findPaymentById(paymentId);
 		if (payment != null) {
@@ -60,6 +41,19 @@ public class PaymentUseCase {
 		} else {
 			throw new BusinessException("Não existe pagamento com este id");
 		}
+	}
 
+	public void sendPaymentToBank(Long paymentId) {
+		Payment payment = paymentRepository.findPaymentById(paymentId);
+		if (payment == null) {
+			throw new BusinessException("Não existe pagamento com este id");
+		}
+
+		System.out.println("Enviando pagamento para instituição financeira: " + paymentId);
+
+		payment.setPaymentStatus(PaymentStatus.OK);
+		payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
+
+		paymentRepository.updatePaymentStatus(payment);
 	}
 }
