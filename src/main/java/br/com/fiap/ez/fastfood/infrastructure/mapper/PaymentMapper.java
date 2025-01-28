@@ -47,15 +47,16 @@ public class PaymentMapper {
 	public static List<PaymentEntity> domainToEntity(List<Payment> payments) {
 		return payments.stream().map(PaymentMapper::domainToEntity).collect(Collectors.toList());
 	}
-	
-	  public static PaymentDTO domainToResponseDto(Payment payment) {
-	        if (payment == null) {
-	            return null;
-	        }
-	        PaymentDTO dto = new PaymentDTO();
-	        dto.setPaymentId(payment.getId() != null ? payment.getId() : null);
-	        dto.setPaymentStatus(payment.getPaymentStatus().name());
-	        return dto;
-	    }
+
+	public static PaymentDTO domainToResponseDto(Payment payment) {
+		PaymentDTO dto = new PaymentDTO(payment);
+		dto.setId(payment.getId());
+		dto.setOrderId(payment.getOrderId());
+		dto.setUserId(payment.getUserId());
+		dto.setPaymentDate(payment.getPaymentDate());
+		dto.setPaymentPrice(payment.getPaymentPrice());
+		dto.setPaymentStatus(payment.getPaymentStatus().toString());
+		return dto;
+	}
 
 }

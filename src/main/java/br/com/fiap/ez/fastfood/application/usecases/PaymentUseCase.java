@@ -35,7 +35,7 @@ public class PaymentUseCase {
 	}
 
 	public PaymentDTO registerPaymentStatus(PaymentDTO paymentDto) {
-		Payment payment = paymentRepository.findPaymentById(paymentDto.getPaymentId());
+		Payment payment = paymentRepository.findPaymentById(paymentDto.getId());
 		if (payment == null) {
 			throw new BusinessException("Não existe pagamento com este id");
 		}
