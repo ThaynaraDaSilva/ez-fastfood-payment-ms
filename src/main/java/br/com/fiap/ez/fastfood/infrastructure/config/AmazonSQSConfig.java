@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.sqs.SqsClient;
+
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
 @Configuration
 public class AmazonSQSConfig {
@@ -21,13 +21,27 @@ public class AmazonSQSConfig {
 	       
 	    }
 
+		/*
+		 * @Bean public SqsClient sqsClient() { return SqsClient.builder()
+		 * .region(Region.of(amazonSQSProperties.getRegion()))
+		 * .credentialsProvider(StaticCredentialsProvider.create(
+		 * AwsBasicCredentials.create( amazonSQSProperties.getAccessKey(),
+		 * amazonSQSProperties.getSecretKey() ) ))
+		 * .endpointOverride(URI.create(amazonSQSProperties.getPaymentQueueUrl())) //
+		 * Use LocalStack or AWS URL .build(); }
+		 */
+	    
 	    @Bean
-	    public SqsClient sqsClient() {
-	        return SqsClient.builder()
-	                .region(Region.of(amazonSQSProperties.getRegion())) 
+	    public SqsAsyncClient sqsAsyncClient() {
+	        return SqsAsyncClient.builder()
+	                .region(Region.of(amazonSQSProperties.getRegion()))
 	                .credentialsProvider(StaticCredentialsProvider.create(
-	                        AwsBasicCredentials.create(amazonSQSProperties.getAccessKey(), amazonSQSProperties.getSecretKey())
-	                )) .endpointOverride(URI.create("http://localhost:4566")) // Endpoint do LocalStack
+	                        AwsBasicCredentials.create(
+	                                amazonSQSProperties.getAccessKey(),
+	                                amazonSQSProperties.getSecretKey()
+	                        )
+	                ))
+	                .endpointOverride(URI.create(amazonSQSProperties.getPaymentQueueUrl())) // Use LocalStack or AWS URL
 	                .build();
 	    }
 	 
