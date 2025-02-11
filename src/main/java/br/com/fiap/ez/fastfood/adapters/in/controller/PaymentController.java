@@ -4,6 +4,7 @@ import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 //import br.com.fiap.ez.fastfood.application.dto.PaymentResponseDTO;
 import br.com.fiap.ez.fastfood.application.usecases.PaymentUseCase;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class PaymentController {
 		this.paymentUseCase = paymentUseCase;
 	}
 
-	@PostMapping("/make-payment")
+	@PostMapping("/register-payment-record")
 	public ResponseEntity<PaymentDTO> registerNewPayment(
 			@RequestParam Long orderId,
 			@RequestParam(required = false) Long userId,
@@ -36,7 +37,7 @@ public class PaymentController {
 		PaymentDTO paymentDTO = paymentUseCase.checkPaymentStatus(paymentId);
 		return ResponseEntity.ok(paymentDTO);
 	}
-
+	
 	@PutMapping("/send-to-bank/{paymentId}")
 	public ResponseEntity<String> sendPaymentToBank(@PathVariable Long paymentId) {
 		paymentUseCase.sendPaymentToBank(paymentId);
