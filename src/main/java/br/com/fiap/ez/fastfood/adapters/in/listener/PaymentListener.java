@@ -1,65 +1,86 @@
 package br.com.fiap.ez.fastfood.adapters.in.listener;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.application.usecases.PaymentUseCase;
 import br.com.fiap.ez.fastfood.infrastructure.config.AmazonSQSProperties;
-import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
-import io.awspring.cloud.sqs.annotation.SqsListener;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
+import software.amazon.awssdk.services.sqs.model.Message;
 import jakarta.annotation.PostConstruct;
 
 @Component
 public class PaymentListener {
 
-	private final PaymentUseCase paymentUseCase;
-	private final ObjectMapper objectMapper;
-	private final SqsClient sqsClient;
-	private final AmazonSQSProperties amazonSQSProperties;
-	
-	 @PostConstruct
+	 private final PaymentUseCase paymentUseCase;
+	    private final ObjectMapper objectMapper;
+	    private final SqsAsyncClient sqsAsyncClient;
+	    private final AmazonSQSProperties amazonSQSProperties;
+	    
+	    @PostConstruct
 	    public void init() {
 	        System.out.println("PaymentListener foi registrado e está pronto para consumir mensagens.");
 	    }
 
-	@Autowired
-	public PaymentListener(PaymentUseCase paymentUseCase, SqsClient sqsClient, AmazonSQSProperties amazonSQSProperties) {
-		this.paymentUseCase = paymentUseCase;
-		this.sqsClient = sqsClient;
-		this.amazonSQSProperties = amazonSQSProperties;
-		this.objectMapper = new ObjectMapper();
-	}
+	    @Autowired
+	    public PaymentListener(PaymentUseCase paymentUseCase, SqsAsyncClient sqsAsyncClient, AmazonSQSProperties amazonSQSProperties) {
+	        this.paymentUseCase = paymentUseCase;
+	        this.sqsAsyncClient = sqsAsyncClient;
+	        this.amazonSQSProperties = amazonSQSProperties;
+	        this.objectMapper = new ObjectMapper();
+	    }
 
-	@SqsListener(value = "order-payment-queue")
-	public void processPayment(String message, @Header("ReceiptHandle") String receiptHandle) {
+	    @Scheduled(fixedDelay = 5000)  // Runs every 5 seconds
+	    public void pollMessagesFromQueue() {
+	        System.out.println("🔍 Checking for messages in SQS...");
 
-		try {
-			// Deserialize JSON into DTO
-			PaymentDTO paymentDTO = objectMapper.readValue(message, PaymentDTO.class);
+	        ReceiveMessageRequest request = ReceiveMessageRequest.builder()
+	                .queueUrl(amazonSQSProperties.getPaymentQueueUrl())
+	                .maxNumberOfMessages(5)  // Fetch up to 5 messages at a time
+	                .build();
 
-			// Call the existing use case method
-			paymentUseCase.registerPayment(paymentDTO.getOrderId(), paymentDTO.getUserId(),
-					paymentDTO.getPaymentPrice());
-			System.err.println("########### Payment processed ###########");
+	        ReceiveMessageResponse response = sqsAsyncClient.receiveMessage(request).join();
 
-			// Manually delete the message from the queue
-			deleteMessage(receiptHandle);
-		} catch (Exception e) {
-			System.err.println("Error processing payment: " + e.getMessage());
-		}
-	}
 
-	private void deleteMessage(String receiptHandle) {
-		DeleteMessageRequest deleteMessageRequest = DeleteMessageRequest.builder().queueUrl(amazonSQSProperties.getPaymentQueueUrl())
-				.receiptHandle(receiptHandle).build();
+	        if (response.messages().isEmpty()) {
+	            System.out.println("⚠️ No new messages found.");
+	        } else {
+	            for (Message message : response.messages()) {
+	                processPayment(message.body(), message.receiptHandle());
+	            }
+	        }
+	    }
 
-		sqsClient.deleteMessage(deleteMessageRequest);
-		System.out.println("Message deleted from queue.");
-	}
+	    private void processPayment(String message, String receiptHandle) {
+	        try {
+	            // Deserialize JSON into DTO
+	            PaymentDTO paymentDTO = objectMapper.readValue(message, PaymentDTO.class);
+
+	            // Process payment logic
+	            paymentUseCase.registerPayment(paymentDTO.getOrderId(), paymentDTO.getUserId(), paymentDTO.getPaymentPrice());
+	            System.out.println("Payment processed successfully: " + paymentDTO);
+
+	            // Delete the message from the queue
+	            deleteMessage(receiptHandle);
+	        } catch (Exception e) {
+	            System.err.println("❌ Error processing payment: " + e.getMessage());
+	        }
+	    }
+
+	    private void deleteMessage(String receiptHandle) {
+	        DeleteMessageRequest deleteMessageRequest = DeleteMessageRequest.builder()
+	                .queueUrl(amazonSQSProperties.getPaymentQueueUrl())
+	                .receiptHandle(receiptHandle)
+	                .build();
+
+	        sqsAsyncClient.deleteMessage(deleteMessageRequest);
+	        System.out.println("Message deleted from queue.");
+	    }
 
 }
