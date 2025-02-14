@@ -2,6 +2,7 @@ package br.com.fiap.ez.fastfood.infrastructure.mapper;
 
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
+import br.com.fiap.ez.fastfood.domain.model.PaymentStatus;
 import br.com.fiap.ez.fastfood.infrastructure.persistence.PaymentEntity;
 
 import java.util.List;
@@ -49,14 +50,28 @@ public class PaymentMapper {
 	}
 
 	public static PaymentDTO domainToResponseDto(Payment payment) {
-		PaymentDTO dto = new PaymentDTO(payment);
-		dto.setId(payment.getId());
+		PaymentDTO dto = new PaymentDTO();
+		//dto.setId(payment.getId());
 		dto.setOrderId(payment.getOrderId());
 		dto.setUserId(payment.getUserId());
-		dto.setPaymentDate(payment.getPaymentDate());
+		//dto.setPaymentDate(payment.getPaymentDate());
 		dto.setPaymentPrice(payment.getPaymentPrice());
-		dto.setPaymentStatus(payment.getPaymentStatus().toString());
+		//dto.setPaymentStatus(payment.getPaymentStatus().toString());
 		return dto;
 	}
+	
+   public Payment DTOtoDomain (PaymentDTO paymentDTO) {
+	   Payment payment = new Payment();
+	   
+	   payment.setOrderId(paymentDTO.getOrderId());
+	   
+	   if(paymentDTO.getUserId()!=null){
+		   payment.setUserId(paymentDTO.getUserId());
+	   }
+	
+	   payment.setPaymentPrice(paymentDTO.getPaymentPrice());
+	   payment.setPaymentStatus(PaymentStatus.PENDING);
+       return payment;
+   }
 
 }

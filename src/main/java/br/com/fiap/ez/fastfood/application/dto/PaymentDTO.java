@@ -4,31 +4,33 @@ import br.com.fiap.ez.fastfood.domain.model.Payment;
 
 import java.time.ZonedDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PaymentDTO {
 
-	private Long id;
+	//private Long id;
 	private Long orderId;
 	private Long userId;
-	private ZonedDateTime paymentDate;
+	//private ZonedDateTime paymentDate;
+	
+	@JsonProperty("amount")
 	private Double paymentPrice;
-	private String paymentStatus;
+	//private String paymentStatus;
 
-	public PaymentDTO(Payment payment) {
-		this.id = payment.getId();
-		this.orderId = payment.getOrderId();
-		this.userId = payment.getUserId();
-		this.paymentDate = payment.getPaymentDate();
-		this.paymentPrice = payment.getPaymentPrice();
-		this.paymentStatus = payment.getPaymentStatus().toString();
+	 // Default constructor required by Jackson
+    public PaymentDTO() {
+    }
+	
+    
+	
+	public PaymentDTO(Long orderId, Long userId, Double paymentPrice) {
+		super();
+		this.orderId = orderId;
+		this.userId = userId;
+		this.paymentPrice = paymentPrice;
 	}
 
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public Long getOrderId() {
 		return orderId;
@@ -46,13 +48,6 @@ public class PaymentDTO {
 		this.userId = userId;
 	}
 
-	public ZonedDateTime getPaymentDate() {
-		return paymentDate;
-	}
-
-	public void setPaymentDate(ZonedDateTime paymentDate) {
-		this.paymentDate = paymentDate;
-	}
 
 	public Double getPaymentPrice() {
 		return paymentPrice;
@@ -62,12 +57,6 @@ public class PaymentDTO {
 		this.paymentPrice = paymentPrice;
 	}
 
-	public String getPaymentStatus() {
-		return paymentStatus;
-	}
-
-	public void setPaymentStatus(String paymentStatus) {
-		this.paymentStatus = paymentStatus;
-	}
+	
 
 }
