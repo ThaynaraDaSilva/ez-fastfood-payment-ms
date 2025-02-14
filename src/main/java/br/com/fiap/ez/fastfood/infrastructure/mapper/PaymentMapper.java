@@ -50,13 +50,13 @@ public class PaymentMapper {
 	}
 
 	public static PaymentDTO domainToResponseDto(Payment payment) {
-		PaymentDTO dto = new PaymentDTO(payment);
-		dto.setId(payment.getId());
+		PaymentDTO dto = new PaymentDTO();
+		//dto.setId(payment.getId());
 		dto.setOrderId(payment.getOrderId());
 		dto.setUserId(payment.getUserId());
-		dto.setPaymentDate(payment.getPaymentDate());
+		//dto.setPaymentDate(payment.getPaymentDate());
 		dto.setPaymentPrice(payment.getPaymentPrice());
-		dto.setPaymentStatus(payment.getPaymentStatus().toString());
+		//dto.setPaymentStatus(payment.getPaymentStatus().toString());
 		return dto;
 	}
 	

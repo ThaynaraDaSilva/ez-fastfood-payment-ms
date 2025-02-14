@@ -28,10 +28,13 @@ public class PaymentUseCase {
 		payment.setOrderId(orderId);
 		payment.setUserId(userId);
 		payment.setPaymentPrice(totalPrice);
-		payment.setPaymentStatus(PaymentStatus.PENDING);
+		payment.setPaymentStatus(PaymentStatus.OK);
 		payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
+		
+		System.out.println("#### PAYMENT USE CASE ###");
 
 		paymentRepository.registerPayment(payment);
+		System.out.println("#### PAYMENT USE CASE REGISTER PAYMENT OK ###");
 	}
 
 	public PaymentDTO checkPaymentStatus(Long paymentId) {
