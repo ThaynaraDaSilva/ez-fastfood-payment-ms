@@ -31,10 +31,10 @@ public class PaymentUseCase {
 		payment.setPaymentStatus(PaymentStatus.OK);
 		payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
 		
-		System.out.println("#### PAYMENT USE CASE ###");
+		//System.out.println("#### PAYMENT USE CASE ###");
 
 		paymentRepository.registerPayment(payment);
-		System.out.println("#### PAYMENT USE CASE REGISTER PAYMENT OK ###");
+		//System.out.println("#### PAYMENT USE CASE REGISTER PAYMENT OK ###");
 	}
 
 	public PaymentDTO checkPaymentStatus(Long paymentId) {
