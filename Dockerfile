@@ -31,4 +31,4 @@ COPY --from=build /app/target/ez-fastfood-payment-ms.jar /app/ez-fastfood-paymen
 #EXPOSE 8080
 
 # Comando para rodar a aplicação
-ENTRYPOINT ["java", "-jar", "/app/ez-fastfood-payment-ms.jar"]
+ENTRYPOINT ["java", "-jar", "ez-fastfood-payment-ms.jar"]
