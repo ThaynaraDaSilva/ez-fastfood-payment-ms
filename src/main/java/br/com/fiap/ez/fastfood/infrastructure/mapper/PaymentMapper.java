@@ -61,7 +61,11 @@ public class PaymentMapper {
 	}
 	
    public Payment DTOtoDomain (PaymentDTO paymentDTO) {
-	   Payment payment = new Payment();
+	   if (paymentDTO == null) {
+		   return null;
+	   }
+
+		Payment payment = new Payment();
 	   
 	   payment.setOrderId(paymentDTO.getOrderId());
 	   
