@@ -1,20 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ezfastfood-api-deployment
+  name: ezfastfood-payment-ms-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ezfastfood
+      app: ezfastfood-payment-ms
   template:
     metadata:
       labels:
-        app: ezfastfood
+        app: ezfastfood-payment-ms
     spec:
+      nodeSelector:
+        service: payment
       containers:
-      - name: ezfastfood-container
-        image: dasilvathaynara/ez-fast-food-api:v3
+      - name: ezfastfood-payment-ms-container
+        image: dasilvathaynara/ez-fastfood-payment-ms:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -24,21 +26,21 @@ spec:
         - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
-              name: ezfastfood-secret         # Reference to the Secret holding the sensitive info
+              name: ezfastfood-payment-secret        # Reference to the Secret holding the sensitive info
               key: POSTGRES_DB                # The key in the Secret
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: ezfastfood-secret         # Reference to the Secret holding the sensitive info
+              name: ezfastfood-payment-secret        # Reference to the Secret holding the sensitive info
               key: POSTGRES_USER              # The key in the Secret
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: ezfastfood-secret         # Reference to the Secret holding the sensitive info
+              name: ezfastfood-payment-secret        # Reference to the Secret holding the sensitive info
               key: POSTGRES_PASSWORD          # The key in the Secret
         envFrom:
         - configMapRef:
-            name: ezfastfood-api-configmap    # Reference to the ConfigMap for non-sensitive data
+            name: ezfastfood-payment-configmap    # Reference to the ConfigMap for non-sensitive data
         resources:
           requests:
             cpu: "250m"
@@ -50,6 +52,6 @@ spec:
           httpGet:
             path: /actuator/health 
             port: 8080
-          initialDelaySeconds: 35
+          initialDelaySeconds: 15
           periodSeconds: 10
           failureThreshold: 3

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ezfastfood-payment-configmap
+data:
+  APP_NAME: "ez-fastfood-payment-ms"
+  LOG_LEVEL_SPRINGFRAMEWORK: "ERROR"
+  LOG_LEVEL_SPRINGDOC: "off"
+  LOG_LEVEL_HIBERNATE_SQL: "off"
+  API_DATASOURCE_URL: "jdbc:postgresql://order-ms-db-dev.cr6w0cgk4uiy.us-east-1.rds.amazonaws.com:5432/postgres?currentSchema=ez_fastfood_payment"
+  POSTGRES_PORT: "5432"
