@@ -1,5 +1,8 @@
 package br.com.fiap.ez.fastfood.application.usecases;
 
+
+import br.com.fiap.ez.fastfood.adapters.out.http.OrderHttpClient;
+import br.com.fiap.ez.fastfood.application.dto.OrderRequestDTO;
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
 import br.com.fiap.ez.fastfood.domain.model.PaymentStatus;
@@ -13,9 +16,11 @@ import java.time.ZonedDateTime;
 public class PaymentUseCase {
 
 	private final PaymentRepository paymentRepository;
+	private final OrderHttpClient orderHttpClient;
 
-	public PaymentUseCase(PaymentRepository paymentRepository) {
+	public PaymentUseCase(PaymentRepository paymentRepository,OrderHttpClient orderHttpClient) {
 		this.paymentRepository = paymentRepository;
+		this.orderHttpClient = orderHttpClient;
 	}
 
 	public void registerPayment(Long orderId, Long userId, Double totalPrice) {
@@ -33,6 +38,9 @@ public class PaymentUseCase {
 		
 
 		paymentRepository.registerPayment(payment);
+		
+		
+		//PROCESSO A CORRIGIR APOS INTEGRACAO COM MERCADOPAGO
 	}
 
 	public PaymentDTO checkPaymentStatus(Long paymentId) {
@@ -56,5 +64,21 @@ public class PaymentUseCase {
 		payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
 		paymentRepository.updatePaymentStatus(payment);
+	}
+	
+	public void notifyOrderPaymentStatus (PaymentDTO paymentDTO) {
+		try {
+
+			OrderRequestDTO orderRequest = new OrderRequestDTO();
+			
+			orderRequest.setOrderId(paymentDTO.getOrderId());
+			orderRequest.setPaymentStatus(PaymentStatus.OK);
+			if(paymentDTO.getUserId()!=null) {
+				orderRequest.setUserId(paymentDTO.getUserId());
+			}
+			
+		} catch (Exception e) {
+		    throw new RuntimeException("Failed integration: " + e);
+		}
 	}
 }
