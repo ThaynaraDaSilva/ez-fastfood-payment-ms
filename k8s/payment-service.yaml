@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ezfastfood-api-service
+  name: ezfastfood-payment-service
 spec:
-  type: ClusterIP # Internal communication
+  type: LoadBalancer # External communication
   selector:
-    app: ezfastfood
+    app: ezfastfood-payment-ms
   ports:
     - protocol: TCP
       port: 80
