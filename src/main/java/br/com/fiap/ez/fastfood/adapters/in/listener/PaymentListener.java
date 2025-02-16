@@ -36,9 +36,9 @@ public class PaymentListener {
 	        this.objectMapper = new ObjectMapper();
 	    }
 
-	    @Scheduled(fixedDelay = 60000)  // 5000 Runs every 5 seconds
+	    @Scheduled(fixedDelay = 120000)  // 5000 Runs every 5 seconds
 	    public void pollMessagesFromQueue() {
-	       // System.out.println("Checking for messages in SQS...");
+	        //System.out.println("Checking for messages in SQS...");
 
 	        ReceiveMessageRequest request = ReceiveMessageRequest.builder()
 	                .queueUrl(amazonSQSProperties.getPaymentQueueUrl())
@@ -49,7 +49,7 @@ public class PaymentListener {
 
 
 	        if (response.messages().isEmpty()) {
-	           // System.out.println("No new messages found.");
+	            //System.out.println("No new messages found.");
 	        } else {
 	            for (Message message : response.messages()) {
 	                processPayment(message.body(), message.receiptHandle());
@@ -64,12 +64,12 @@ public class PaymentListener {
 
 	            // Process payment logic
 	            paymentUseCase.registerPayment(paymentDTO.getOrderId(), paymentDTO.getUserId(), paymentDTO.getPaymentPrice());
-	           // System.out.println("Payment processed successfully: " + paymentDTO);
+	            //System.out.println("Payment processed successfully: " + paymentDTO);
 
 	            // Delete the message from the queue
 	            deleteMessage(receiptHandle);
 	        } catch (Exception e) {
-	           // System.err.println("Error processing payment: " + e.getMessage());
+	            //System.err.println("Error processing payment: " + e.getMessage());
 	        }
 	    }
 
@@ -80,7 +80,7 @@ public class PaymentListener {
 	                .build();
 
 	        sqsAsyncClient.deleteMessage(deleteMessageRequest);
-	       // System.out.println("Message deleted from queue.");
+	        //System.out.println("Message deleted from queue.");
 	    }
 
 }
