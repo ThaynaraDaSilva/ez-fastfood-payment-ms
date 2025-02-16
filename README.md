@@ -30,48 +30,44 @@ POST /register-payment-record
 ```
 
 Query Params:
-```json
-{
-  "orderId": 1,
-  "userId": 1,
-  "amount": 20.5
-}
 ```
+orderId (Long) - Obrigatório
+userId (Long) - Opcional
+totalPrice (Double) - Obrigatório
+
+PUT api/payments/register-payment-record?orderId=1&userId=1&totalPrice=20.5
+```
+
 Response:
 ```json
 {
-  "id": 1,
   "orderId": 1,
   "userId": 1,
   "amount": 20.5,
-  "status": "PENDING"
 }
 ```
 Consultar Pagamento por ID
 
 ```http
-GET /pagamentos/{id}
+GET /check-status/{paymentId}
 ```
+
 Response:
 ```json
 {
-  "id": 1,
   "orderId": 1,
   "userId": 1,
   "amount": 20.5,
-  "status": "PENDING"
 }
 ```
 Atualizar Status do Pagamento
 ```http
-PATCH /pagamentos/{id}
+PUT /send-to-bank/{paymentId}
 ```
 
 Request Body:
-```json
-{
-  "status": "APPROVED"
-}
+```
+paymentId
 ```
 Response:
 ```json
@@ -129,7 +125,11 @@ mvn test
 ## Evidência da Cobertura de Testes
 Abaixo está uma captura de tela da cobertura de testes gerada pelo SonarQube Cloud:
 
-# Inserir evidência do SonarQube Cloud
+![Image](https://github.com/user-attachments/assets/84259242-098a-4f79-a1b8-512f965f7514)
+
+![Image](https://github.com/user-attachments/assets/8a362bbc-f75c-4a56-a967-fab191984128)
+
+![Image](https://github.com/user-attachments/assets/ff53276e-ff4b-428a-8055-e7d67f3ef24f)
 
 Considerações Finais
 
