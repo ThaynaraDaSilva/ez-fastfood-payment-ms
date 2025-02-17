@@ -12,7 +12,7 @@ public interface OrderHttpClient {
 	@FeignClient(name = "orderClient", url = "${microservices.order-url}")
 	public interface PaymentHttpClient {
 		
-		 @PostMapping("/order")
+		 @PostMapping("/register-payment-status")
 		  OrderResponseDTO registerPayment(@RequestBody OrderRequestDTO OrderRequest);
 
 	}
