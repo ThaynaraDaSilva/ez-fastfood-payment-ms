@@ -10,6 +10,7 @@ import br.com.fiap.ez.fastfood.application.usecases.PaymentUseCase;
 import software.amazon.awssdk.regions.Region;
 
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 
@@ -24,7 +25,7 @@ public class AmazonSQSConfig {
         this.paymentUseCase = paymentUseCase;
     }
 
-    @Bean
+   @Bean
     public SqsAsyncClient sqsAsyncClient() {
         return SqsAsyncClient.builder()
                 .region(Region.of(amazonSQSProperties.getRegion()))
@@ -34,10 +35,9 @@ public class AmazonSQSConfig {
                                 amazonSQSProperties.getSecretKey()
                         )
                 ))
-                .endpointOverride(URI.create("http://localhost:4566")) // Correção aqui
                 .build();
     }
-
+    
     @Bean
     public PaymentListener paymentListener(SqsAsyncClient sqsAsyncClient) {
         return new PaymentListener(paymentUseCase, sqsAsyncClient, amazonSQSProperties);

@@ -1,5 +1,8 @@
 package br.com.fiap.ez.fastfood.application.usecases;
 
+
+import br.com.fiap.ez.fastfood.adapters.out.http.OrderHttpClient;
+import br.com.fiap.ez.fastfood.application.dto.OrderRequestDTO;
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
 import br.com.fiap.ez.fastfood.domain.model.PaymentStatus;
@@ -13,9 +16,11 @@ import java.time.ZonedDateTime;
 public class PaymentUseCase {
 
 	private final PaymentRepository paymentRepository;
+	private final OrderHttpClient orderHttpClient;
 
-	public PaymentUseCase(PaymentRepository paymentRepository) {
+	public PaymentUseCase(PaymentRepository paymentRepository,OrderHttpClient orderHttpClient) {
 		this.paymentRepository = paymentRepository;
+		this.orderHttpClient = orderHttpClient;
 	}
 
 	public void registerPayment(Long orderId, Long userId, Double totalPrice) {
@@ -31,10 +36,11 @@ public class PaymentUseCase {
 		payment.setPaymentStatus(PaymentStatus.OK);
 		payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
 		
-		//System.out.println("#### PAYMENT USE CASE ###");
 
 		paymentRepository.registerPayment(payment);
-		//System.out.println("#### PAYMENT USE CASE REGISTER PAYMENT OK ###");
+		
+		
+		//PROCESSO A CORRIGIR APOS INTEGRACAO COM MERCADOPAGO
 	}
 
 	public PaymentDTO checkPaymentStatus(Long paymentId) {
@@ -58,5 +64,24 @@ public class PaymentUseCase {
 		payment.setPaymentDate(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
 		paymentRepository.updatePaymentStatus(payment);
+	}
+	
+	public void notifyOrderPaymentStatus (PaymentDTO paymentDTO) {
+		try {
+
+			OrderRequestDTO orderRequestDTO = new OrderRequestDTO();
+			orderRequestDTO.setOrderId(paymentDTO.getOrderId());
+			orderRequestDTO.setPaymentStatus(PaymentStatus.OK);
+			if(paymentDTO.getUserId()!=null) {
+				orderRequestDTO.setUserId(paymentDTO.getUserId());
+			}
+			System.out.println("Antes do método de notificação");
+			orderHttpClient.notifyOrderPaymentStatus(orderRequestDTO);
+			System.out.println("Passei pelo método de notificação");
+			
+			
+		} catch (Exception e) {
+		    throw new RuntimeException("Failed integration: " + e);
+		}
 	}
 }

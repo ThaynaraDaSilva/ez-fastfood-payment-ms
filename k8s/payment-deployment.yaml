@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ezfastfood-payment-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ezfastfood-payment-ms
+  template:
+    metadata:
+      labels:
+        app: ezfastfood-payment-ms
+    spec:
+      nodeSelector:
+        service: payment
+      containers:
+      - name: ezfastfood-payment-ms-container
+        image: dasilvathaynara/ez-fastfood-payment-ms:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: JAVA_OPTS
+          value: "-Xms100m -Xmx512m -XX:+UseParallelGC"  # JVM options
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: ezfastfood-payment-secret        # Reference to the Secret holding the sensitive info
+              key: POSTGRES_DB                # The key in the Secret
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: ezfastfood-payment-secret        # Reference to the Secret holding the sensitive info
+              key: POSTGRES_USER              # The key in the Secret
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ezfastfood-payment-secret        # Reference to the Secret holding the sensitive info
+              key: POSTGRES_PASSWORD          # The key in the Secret
+        - name: SQS_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ezfastfood-payment-secret         # Reference to the Secret holding the sensitive info
+              key: SQS_ACCESS_KEY               # The key in the Secret  
+        - name: SQS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ezfastfood-payment-secret         # Reference to the Secret holding the sensitive info
+              key: SQS_SECRET_KEY   
+        envFrom:
+        - configMapRef:
+            name: ezfastfood-payment-configmap    # Reference to the ConfigMap for non-sensitive data
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "150Mi"
+          limits:
+            cpu: "300m"
+            memory: "500Mi"
+        readinessProbe:
+          httpGet:
+            path: /actuator/health 
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 3
