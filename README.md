@@ -1,7 +1,12 @@
 # Microserviço de Pagamentos
 
 ## Visão Geral
-O microserviço de pagamentos é responsável pelo processamento e gerenciamento de pagamentos dentro do ecossistema do sistema de autoatendimento de fast food. Ele fornece APIs para criação, consulta e atualização de pagamentos, garantindo segurança e rastreabilidade das transações.
+O microserviço de pagamentos é responsável pelo processamento e gerenciamento de pagamentos dentro do sistema de autoatendimento do EZ-FASTFOOD. Ele fornece APIs para criação, consulta e atualização de pagamentos.
+
+## Modelo do Banco de Dados
+### Diagrama do Schema
+
+![image](https://github.com/user-attachments/assets/f1c7991b-58b5-47c7-9cfc-5f2a7a6df080)
 
 ## Tecnologias Utilizadas
 - **Java 17**
@@ -15,9 +20,9 @@ O microserviço de pagamentos é responsável pelo processamento e gerenciamento
 - **Surefire & JaCoCo** (para geração de relatórios de cobertura e integração com SonarQube Cloud)
 
 ## Arquitetura
-Este microserviço segue a arquitetura **hexagonal**, separando claramente os componentes internos e externos:
+Este microserviço segue a arquitetura limpa **Clean Arquitecture**, separando claramente os componentes internos e externos:
 
-- **Camada de Domínio**: Modelação da entidade `Pagamento` e regras de negócio.
+- **Camada de Domínio**: Modelação da entidade `Payment` e regras de negócio.
 - **Camada de Aplicação**: Contém serviços que implementam as regras de negócio e interagem com os adaptadores.
 - **Adaptadores de Entrada**: Controllers responsáveis pela exposição das APIs.
 - **Adaptadores de Saída**: Repositórios para persistência e comunicação com outras APIs.
@@ -127,13 +132,9 @@ Abaixo está uma captura de tela da cobertura de testes gerada pelo SonarQube Cl
 
 ![Image](https://github.com/user-attachments/assets/84259242-098a-4f79-a1b8-512f965f7514)
 
-![Image](https://github.com/user-attachments/assets/8a362bbc-f75c-4a56-a967-fab191984128)
-
-![Image](https://github.com/user-attachments/assets/ff53276e-ff4b-428a-8055-e7d67f3ef24f)
-
 Considerações Finais
 
-Este microserviço pode ser integrado a outros componentes do sistema de autoatendimento, garantindo um fluxo seguro e eficiente de pagamentos. Para futuras melhorias, pode-se incluir suporte a diferentes gateways de pagamento e webhooks para notificação de status.
+Este microserviço pode ser integrado a outros componentes do sistema de autoatendimento, garantindo um fluxo seguro e eficiente de pagamentos.
 
 https://www.javatodev.com/how-to-use-amazon-sqs-with-spring-boot/
 
