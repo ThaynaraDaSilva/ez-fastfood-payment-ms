@@ -1,5 +1,7 @@
 package br.com.fiap.ez.fastfood.application.usecases;
 
+import br.com.fiap.ez.fastfood.adapters.out.http.OrderHttpClient;
+import br.com.fiap.ez.fastfood.application.dto.OrderRequestDTO;
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
 import br.com.fiap.ez.fastfood.domain.model.PaymentStatus;
@@ -21,6 +23,9 @@ public class PaymentUseCaseTest {
 
     @Mock
     private PaymentRepository paymentRepository;
+
+    @Mock
+    private OrderHttpClient orderHttpClient;
 
     @InjectMocks
     private PaymentUseCase paymentUseCase;
@@ -99,5 +104,40 @@ public class PaymentUseCaseTest {
         when(paymentRepository.findPaymentById(paymentId)).thenReturn(null);
 
         assertThrows(BusinessException.class, () -> paymentUseCase.sendPaymentToBank(paymentId));
+    }
+
+    @Test
+    void testNotifyOrderPaymentStatus_Success() {
+        // Arrange
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setOrderId(1L);
+        paymentDTO.setUserId(2L);
+
+        // Act
+        paymentUseCase.notifyOrderPaymentStatus(paymentDTO);
+
+        // Assert
+        verify(orderHttpClient, times(1)).notifyOrderPaymentStatus(argThat(orderRequestDTO -> {
+            return orderRequestDTO.getOrderId().equals(paymentDTO.getOrderId()) &&
+                    orderRequestDTO.getUserId().equals(paymentDTO.getUserId()) &&
+                    orderRequestDTO.getPaymentStatus() == PaymentStatus.OK;
+        }));
+    }
+
+    @Test
+    void testNotifyOrderPaymentStatus_WhenExceptionThrown_ShouldThrowRuntimeException() {
+        // Arrange
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setOrderId(1L);
+        paymentDTO.setUserId(2L);
+
+        doThrow(new RuntimeException("HTTP error")).when(orderHttpClient).notifyOrderPaymentStatus(any(OrderRequestDTO.class));
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            paymentUseCase.notifyOrderPaymentStatus(paymentDTO);
+        });
+
+        assertEquals("Failed integration: java.lang.RuntimeException: HTTP error", exception.getMessage());
     }
 }

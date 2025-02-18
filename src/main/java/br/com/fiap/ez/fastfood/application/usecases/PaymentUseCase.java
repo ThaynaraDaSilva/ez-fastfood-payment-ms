@@ -3,7 +3,6 @@ package br.com.fiap.ez.fastfood.application.usecases;
 
 import br.com.fiap.ez.fastfood.adapters.out.http.OrderHttpClient;
 import br.com.fiap.ez.fastfood.application.dto.OrderRequestDTO;
-import br.com.fiap.ez.fastfood.application.dto.OrderResponseDTO;
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
 import br.com.fiap.ez.fastfood.domain.model.PaymentStatus;
