@@ -7,13 +7,13 @@ on:
       - main
 env:
   JAVA_VERSION: '17'
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   DOCKER_FILE_TAG: 'dasilvathaynara/ez-fastfood-payment-ms:latest'
   EKS_CLUSTER_NAME: 'ez-fastfood-cluster-dev'
 
 jobs:
-  setup-jdk:
+  setup-environment-tools:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,8 +23,8 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.JAVA_VERSION }}
 
-  build-package:
-    needs: setup-jdk
+  build-artifact:
+    needs: setup-environment-tools
     runs-on: ubuntu-latest
 
     steps:
@@ -40,8 +40,8 @@ jobs:
       - name: Build with Maven
         run: mvn -f ./pom.xml clean package -Pprd
 
-  run-tests:
-    needs: build-package
+  unit-tests:
+    needs: build-artifact:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
@@ -58,15 +58,11 @@ jobs:
         run: mvn test
 
       - name: Generate Test Report
-        run: |
-          mvn surefire-report:report-only
-          ls -lha
+        run: mvn surefire-report:report-only
 
       - name: Show Test Results in Logs
         if: always()
-        run: |
-          echo "========= Surefire Test Results ========="
-          cat target/surefire-reports/*.txt || echo "No test results found"
+        run: cat target/surefire-reports/*.txt || echo "No test results found"
 
       - name: Upload Test Report as Artifact
         uses: actions/upload-artifact@v4
@@ -74,41 +70,45 @@ jobs:
           name: test-report
           path: target/surefire-reports
 
-  run-sonar-analysis:
-    needs: run-tests
+  static-code-analysis:
+    needs: unit-tests
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: SonarQube Scan
+      - name: Run SonarQube Scan
         run: mvn clean verify sonar:sonar -Dsonar.token=${{ env.SONAR_TOKEN }}
 
-      - name: ⏳ Aguardando processamento do SonarCloud
+      - name: Wait for SonarCloud Processing
         run: sleep 10
-      - name: 🔍 Verificando status do Quality Gate no SonarQube
+        
+      - name: Check SonarQube Quality Gate Status
         run: |
           response=$(curl -s -u "$SONAR_TOKEN:" "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ env.SONAR_PROJECT_KEY }}")
           status=$(echo "$response" | jq -r '.projectStatus.status')
           
-          echo "🚦 Status do Quality Gate: $status"
+          echo "Quality Gate Status: $status"
           
           if [[ "$status" != "OK" ]]; then
             echo "❌ O Quality Gate falhou!"
             exit 1
           fi
-      - name: ✅ Pipeline finalizado com sucesso
-        run: echo "🎉 Tudo certo! O Quality Gate foi aprovado."
+          
+          
+          
+      - name: ✅ SonarQube Passed
+        run: echo "🎉 Quality Gate Passed."
 
-  build-and-push-image:
-    needs: run-sonar-analysis
+  docker-build-push:
     runs-on: ubuntu-latest
+    if: contains('refs/heads/develop', github.ref) || contains('refs/heads/main', github.ref)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Build
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
@@ -124,9 +124,10 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ env.DOCKER_FILE_TAG }}
-  deploy:
-    needs: build-and-push-image
+deploy-to-eks:
+    needs: docker-build-push
     runs-on: ubuntu-latest
+    if: contains('refs/heads/develop', github.ref) || contains('refs/heads/main', github.ref)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
