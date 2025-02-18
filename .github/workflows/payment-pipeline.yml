@@ -99,8 +99,11 @@ jobs:
         run: echo "🎉 Quality Gate Passed."
 
   docker-build-push:
+    needs:
+      - build-artifact
+      - static-code-analysis
     runs-on: ubuntu-latest
-    if: contains('refs/heads/develop', github.ref) || contains('refs/heads/main', github.ref)
+    if: (github.ref == 'refs/heads/develop' && needs.static-code-analysis.result == 'success') || github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
