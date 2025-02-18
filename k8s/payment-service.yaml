@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: ezfastfood-payment-service
 spec:
-  type: LoadBalancer # External communication
+  type: ClusterIP # External communication
   selector:
     app: ezfastfood-payment-ms
   ports:
