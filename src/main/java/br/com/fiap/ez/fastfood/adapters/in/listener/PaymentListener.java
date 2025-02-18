@@ -49,7 +49,7 @@ public class PaymentListener {
 
 
 	        if (response.messages().isEmpty()) {
-	            //System.out.println("No new messages found.");
+	            System.out.println("No new messages found.");
 	        } else {
 	            for (Message message : response.messages()) {
 	                processPayment(message.body(), message.receiptHandle());
@@ -68,8 +68,11 @@ public class PaymentListener {
 
 	            // Delete the message from the queue
 	            deleteMessage(receiptHandle);
+	            
+	            notifyOrderPaymentStatus(paymentDTO);
+	            
 	        } catch (Exception e) {
-	            //System.err.println("Error processing payment: " + e.getMessage());
+	            System.err.println("Error processing payment: " + e.getMessage());
 	        }
 	    }
 
@@ -81,6 +84,14 @@ public class PaymentListener {
 
 	        sqsAsyncClient.deleteMessage(deleteMessageRequest);
 	        //System.out.println("Message deleted from queue.");
+	    }
+	    
+	    private void notifyOrderPaymentStatus(PaymentDTO paymentDTO) {
+	    	try {
+	    		 paymentUseCase.notifyOrderPaymentStatus(paymentDTO);
+	    	}catch(Exception e) {
+	    		System.err.println("Error processing notifying order-ms: " + e.getMessage());
+	    	}
 	    }
 
 }

@@ -1,5 +1,6 @@
 package br.com.fiap.ez.fastfood.infrastructure.config;
 
+import br.com.fiap.ez.fastfood.adapters.out.http.OrderHttpClient;
 import br.com.fiap.ez.fastfood.application.usecases.PaymentUseCase;
 import br.com.fiap.ez.fastfood.domain.repository.PaymentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,10 @@ public class UseCaseConfigurationTest {
 
     @Mock
     private PaymentRepository paymentRepository;
+    
+    @Mock
+    private OrderHttpClient orderHttpClient;
+    
 
     @BeforeEach
     public void setUp() {
@@ -27,7 +32,7 @@ public class UseCaseConfigurationTest {
     @Test
     public void testPaymentUseCase() {
         // Act
-        PaymentUseCase paymentUseCase = useCaseConfiguration.paymentUseCase(paymentRepository);
+        PaymentUseCase paymentUseCase = useCaseConfiguration.paymentUseCase(paymentRepository,orderHttpClient);
 
         // Assert
         assertNotNull(paymentUseCase);

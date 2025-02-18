@@ -38,6 +38,16 @@ spec:
             secretKeyRef:
               name: ezfastfood-payment-secret        # Reference to the Secret holding the sensitive info
               key: POSTGRES_PASSWORD          # The key in the Secret
+        - name: SQS_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ezfastfood-payment-secret         # Reference to the Secret holding the sensitive info
+              key: SQS_ACCESS_KEY               # The key in the Secret  
+        - name: SQS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ezfastfood-payment-secret         # Reference to the Secret holding the sensitive info
+              key: SQS_SECRET_KEY   
         envFrom:
         - configMapRef:
             name: ezfastfood-payment-configmap    # Reference to the ConfigMap for non-sensitive data

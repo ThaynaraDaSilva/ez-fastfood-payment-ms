@@ -25,7 +25,7 @@ public class AmazonSQSConfig {
         this.paymentUseCase = paymentUseCase;
     }
 
-   /*localstack @Bean
+   @Bean
     public SqsAsyncClient sqsAsyncClient() {
         return SqsAsyncClient.builder()
                 .region(Region.of(amazonSQSProperties.getRegion()))
@@ -35,18 +35,9 @@ public class AmazonSQSConfig {
                                 amazonSQSProperties.getSecretKey()
                         )
                 ))
-                 .endpointOverride(URI.create("http://localhost:4566")) // Correção aqui
-                .build();
-    }*/
-    
-    @Bean
-    public SqsAsyncClient sqsAsyncClient() {
-        return SqsAsyncClient.builder()
-                .region(Region.of(amazonSQSProperties.getRegion()))
-                .credentialsProvider(DefaultCredentialsProvider.create()) // Usa credenciais padrão da AWS
                 .build();
     }
-
+    
     @Bean
     public PaymentListener paymentListener(SqsAsyncClient sqsAsyncClient) {
         return new PaymentListener(paymentUseCase, sqsAsyncClient, amazonSQSProperties);
