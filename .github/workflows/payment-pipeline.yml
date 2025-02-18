@@ -41,7 +41,7 @@ jobs:
         run: mvn -f ./pom.xml clean package -Pprd
 
   unit-tests:
-    needs: build-artifact:
+    needs: build-artifact
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     steps:
@@ -95,9 +95,6 @@ jobs:
             echo "❌ O Quality Gate falhou!"
             exit 1
           fi
-          
-          
-          
       - name: ✅ SonarQube Passed
         run: echo "🎉 Quality Gate Passed."
 
@@ -124,7 +121,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ env.DOCKER_FILE_TAG }}
-deploy-to-eks:
+  deploy-to-eks:
     needs: docker-build-push
     runs-on: ubuntu-latest
     if: contains('refs/heads/develop', github.ref) || contains('refs/heads/main', github.ref)
