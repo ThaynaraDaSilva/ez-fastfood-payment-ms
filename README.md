@@ -27,64 +27,6 @@ Este microserviço segue a arquitetura limpa **Clean Arquitecture**, separando c
 - **Adaptadores de Entrada**: Controllers responsáveis pela exposição das APIs.
 - **Adaptadores de Saída**: Repositórios para persistência e comunicação com outras APIs.
 
-## Endpoints Disponíveis
-
-### Criar Pagamento
-```http
-POST /register-payment-record
-```
-
-Query Params:
-```
-orderId (Long) - Obrigatório
-userId (Long) - Opcional
-totalPrice (Double) - Obrigatório
-
-PUT api/payments/register-payment-record?orderId=1&userId=1&totalPrice=20.5
-```
-
-Response:
-```json
-{
-  "orderId": 1,
-  "userId": 1,
-  "amount": 20.5,
-}
-```
-Consultar Pagamento por ID
-
-```http
-GET /check-status/{paymentId}
-```
-
-Response:
-```json
-{
-  "orderId": 1,
-  "userId": 1,
-  "amount": 20.5,
-}
-```
-Atualizar Status do Pagamento
-```http
-PUT /send-to-bank/{paymentId}
-```
-
-Request Body:
-```
-paymentId
-```
-Response:
-```json
-{
-  "id": 1,
-  "orderId": 1,
-  "userId": 1,
-  "amount": 20.5,
-  "status": "APPROVED"
-}
-```
-
 ## Configuração e Execução
 ### Executando com Docker Compose
 
@@ -135,8 +77,9 @@ Abaixo está uma captura de tela da cobertura de testes gerada pelo SonarQube Cl
 Considerações Finais
 
 Este microserviço pode ser integrado a outros componentes do sistema de autoatendimento, garantindo um fluxo seguro e eficiente de pagamentos.
+Link para demais microsserviços:
 
-https://www.javatodev.com/how-to-use-amazon-sqs-with-spring-boot/
-
- aws --endpoint-url=http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/order-payment-queue --message-body '{\"orderId\":1,\"userId\":1,\"amount\":20.5}'
+[Pedido](https://github.com/ThaynaraDaSilva/ez-fastfood-order-ms)<br>
+[Catalogo](https://github.com/ThaynaraDaSilva/ez-fastfood-catalog-ms)<br>
+[Usuário](https://github.com/ThaynaraDaSilva/ez-fastfood-user-ms)
  
