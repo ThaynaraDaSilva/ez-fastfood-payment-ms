@@ -90,7 +90,7 @@ public class PaymentListener {
 	    	try {
 	    		 paymentUseCase.notifyOrderPaymentStatus(paymentDTO);
 	    	}catch(Exception e) {
-	    		
+	    		System.err.println("Error processing notifying order-ms: " + e.getMessage());
 	    	}
 	    }
 

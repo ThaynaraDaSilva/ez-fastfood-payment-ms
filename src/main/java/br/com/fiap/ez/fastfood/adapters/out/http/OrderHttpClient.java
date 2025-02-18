@@ -7,15 +7,10 @@ import br.com.fiap.ez.fastfood.application.dto.OrderRequestDTO;
 import br.com.fiap.ez.fastfood.application.dto.OrderResponseDTO;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
+@FeignClient(name = "orderClient", url = "${microservices.order-url}")
 public interface OrderHttpClient {
-	
-	@FeignClient(name = "orderClient", url = "${microservices.order-url}")
-	public interface PaymentHttpClient {
-		
-		 @PostMapping("/register-payment-status")
-		  OrderResponseDTO registerPayment(@RequestBody OrderRequestDTO OrderRequest);
 
-	}
-
+	@PostMapping("/notify-payment-status")
+	OrderResponseDTO notifyOrderPaymentStatus(@RequestBody OrderRequestDTO orderRequestDTO);
 
 }

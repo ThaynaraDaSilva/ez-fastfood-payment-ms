@@ -3,6 +3,7 @@ package br.com.fiap.ez.fastfood.application.usecases;
 
 import br.com.fiap.ez.fastfood.adapters.out.http.OrderHttpClient;
 import br.com.fiap.ez.fastfood.application.dto.OrderRequestDTO;
+import br.com.fiap.ez.fastfood.application.dto.OrderResponseDTO;
 import br.com.fiap.ez.fastfood.application.dto.PaymentDTO;
 import br.com.fiap.ez.fastfood.domain.model.Payment;
 import br.com.fiap.ez.fastfood.domain.model.PaymentStatus;
@@ -69,13 +70,16 @@ public class PaymentUseCase {
 	public void notifyOrderPaymentStatus (PaymentDTO paymentDTO) {
 		try {
 
-			OrderRequestDTO orderRequest = new OrderRequestDTO();
-			
-			orderRequest.setOrderId(paymentDTO.getOrderId());
-			orderRequest.setPaymentStatus(PaymentStatus.OK);
+			OrderRequestDTO orderRequestDTO = new OrderRequestDTO();
+			orderRequestDTO.setOrderId(paymentDTO.getOrderId());
+			orderRequestDTO.setPaymentStatus(PaymentStatus.OK);
 			if(paymentDTO.getUserId()!=null) {
-				orderRequest.setUserId(paymentDTO.getUserId());
+				orderRequestDTO.setUserId(paymentDTO.getUserId());
 			}
+			System.out.println("Antes do método de notificação");
+			orderHttpClient.notifyOrderPaymentStatus(orderRequestDTO);
+			System.out.println("Passei pelo método de notificação");
+			
 			
 		} catch (Exception e) {
 		    throw new RuntimeException("Failed integration: " + e);
