@@ -71,38 +71,38 @@ jobs:
           name: test-report
           path: target/surefire-reports
 
-  # static-code-analysis:
-  #   needs: unit-tests
-  #   runs-on: ubuntu-latest
-  #   if: github.ref == 'refs/heads/develop'
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+  static-code-analysis:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  #     - name: Run SonarQube Scan
-  #       run: mvn clean verify sonar:sonar -Dsonar.token=${{ env.SONAR_TOKEN }}
+      - name: Run SonarQube Scan
+        run: mvn clean verify sonar:sonar -Dsonar.token=${{ env.SONAR_TOKEN }}
 
-  #     - name: Wait for SonarCloud Processing
-  #       run: sleep 10
+      - name: Wait for SonarCloud Processing
+        run: sleep 10
         
-  #     - name: Check SonarQube Quality Gate Status
-  #       run: |
-  #         response=$(curl -s -u "$SONAR_TOKEN:" "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ env.SONAR_PROJECT_KEY }}")
-  #         status=$(echo "$response" | jq -r '.projectStatus.status')
+      - name: Check SonarQube Quality Gate Status
+        run: |
+          response=$(curl -s -u "$SONAR_TOKEN:" "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ env.SONAR_PROJECT_KEY }}")
+          status=$(echo "$response" | jq -r '.projectStatus.status')
           
-  #         echo "Quality Gate Status: $status"
+          echo "Quality Gate Status: $status"
           
-  #         if [[ "$status" != "OK" ]]; then
-  #           echo "❌ O Quality Gate falhou!"
-  #           exit 1
-  #         fi
-  #     - name: ✅ SonarQube Passed
-  #       run: echo "🎉 Quality Gate Passed."
+          if [[ "$status" != "OK" ]]; then
+            echo "❌ O Quality Gate falhou!"
+            exit 1
+          fi
+      - name: ✅ SonarQube Passed
+        run: echo "🎉 Quality Gate Passed."
 
   docker-build-push:
     needs:
       - build-artifact
-      #- static-code-analysis
+      - static-code-analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -127,6 +127,7 @@ jobs:
   deploy-to-eks:
     needs: docker-build-push
     runs-on: ubuntu-latest
+    if: contains('refs/heads/develop', github.ref) || contains('refs/heads/main', github.ref)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
