@@ -32,8 +32,8 @@ Este microserviço segue a arquitetura limpa **Clean Arquitecture**, separando c
 
 1. Clone este repositório:
 ```bash
-git clone https://github.com/ThaynaraDaSilva/ez-fastfood-catalog-ms
-cd ez-fastfood-catalog-ms
+git clone https://github.com/ThaynaraDaSilva/ez-fastfood-payment-ms
+cd ez-fastfood-payment-ms
 ```
 2. Execute o Docker Compose:
 ```bash
@@ -80,12 +80,6 @@ Este microserviço pode ser integrado a outros componentes do sistema de autoate
 Link para demais microsserviços:
 
 [Pedido](https://github.com/ThaynaraDaSilva/ez-fastfood-order-ms)<br>
-[Catalogo](https://github.com/ThaynaraDaSilva/ez-fastfood-catalog-ms)<br>
+[paymento](https://github.com/ThaynaraDaSilva/ez-fastfood-payment-ms)<br>
 [Usuário](https://github.com/ThaynaraDaSilva/ez-fastfood-user-ms)
- 
 
-aws sqs send-message --queue-url "https://sqs.us-east-1.amazonaws.com/637423288778/ez-fastfood-order-payment-queue-dev" --message-body '{\"orderId\":1,\"amount\":50.0}' --region us-east-1
-
-
-
-```
